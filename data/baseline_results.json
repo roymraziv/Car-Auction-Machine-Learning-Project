@@ -1,0 +1,18 @@
+{
+  "Linear Regression": {
+    "MAE": 969.87,
+    "R2": 0.9704
+  },
+  "Ridge Regression": {
+    "MAE": 969.7,
+    "R2": 0.9705
+  },
+  "Lasso Regression": {
+    "MAE": 968.98,
+    "R2": 0.9704
+  },
+  "Random Forest": {
+    "MAE": 954.36,
+    "R2": 0.9712
+  }
+}

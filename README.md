@@ -1,97 +1,50 @@
-# Car Auction Data Analysis Project
+# Car Auction Price Prediction
 
-## Overview
-This project is a comprehensive analysis of car auction data, focusing on exploring trends, predicting car prices, and identifying anomalies. The project demonstrates proficiency in data cleaning, exploratory data analysis (EDA), machine learning models, and visualization techniques. It showcases a variety of skills, including data preprocessing, clustering, regression, anomaly detection, and classification.
+I took a messy 558k row real-world dataset (used car auction prices from Kaggle) and built a rigorous price prediction pipeline. The work goes from raw data through cleaning and exploratory analysis to baseline models, then to a tuned Gradient Boosting model. The focus is on honest evaluation and understanding what actually drives used car prices.
 
-## Key Features
+## What's in the repo
 
-### 1. Data Cleaning and Preprocessing
-- **Tools Used**: Python (Pandas, NumPy)
-- **Skills Demonstrated**:
-  - Handling missing values and outliers
-  - Standardizing and scaling data
-  - Preparing datasets for machine learning models
+The notebooks are numbered so you can follow the pipeline in order. Everything lives at the root so you don't have to dig.
 
-### 2. Exploratory Data Analysis (EDA)
-- **Tools Used**: Matplotlib, Seaborn
-- **Skills Demonstrated**:
-  - Visualizing relationships between features (e.g., odometer vs. selling price)
-  - Identifying trends and patterns in car sales data
-  - Creating heatmaps, scatter plots, and histograms
+- **01_data_cleaning.ipynb** – Load from Kaggle, handle nulls, standardize body types and categoricals, one-hot encode, export a single cleaned CSV (~545k rows, 920 features).
+- **02_eda.ipynb** – Exploratory data analysis: price distributions, odometer/year/condition vs price, correlations, geography, and time trends. Sets up the intuition for the modeling step.
+- **03_baseline_models.ipynb** – Linear, Ridge, Lasso, and Random Forest on the full feature set. Establishes a performance floor and saves results so the next notebook can use them.
+- **04_gradient_boosting.ipynb** – The main model. Gradient Boosting with full evaluation: baseline comparison, feature importance, and error analysis (where the model gets it wrong by price band and mileage). Includes a short conclusion on strengths and limitations.
+- **05_anomaly_detection.ipynb** – Isolation Forest and LOF on a subset of features to flag outliers (data errors or unusual listings). Kept as a supporting piece rather than the core story.
+- **06_condition_classification.ipynb** – Bonus: predicting condition (Poor/Fair/Good) with KNN and Logistic Regression. Kept separate so the main narrative stays on price prediction.
 
-### 3. Machine Learning Models
-#### a. Regression Analysis
-- **Models Used**: Linear Regression, Random Forest Regressor, Decision Tree Regressor
-- **Skills Demonstrated**:
-  - Predicting car prices based on features like year, odometer, and condition
-  - Evaluating model performance using metrics like RMSE and R-squared
+Older notebooks and a previous project report are in `archive/` if you want to see the evolution of the project.
 
-#### b. Classification
-- **Models Used**: K-Nearest Neighbors (KNN), Logistic Regression
-- **Skills Demonstrated**:
-  - Classifying car conditions into categories (e.g., Poor, Fair, Good)
-  - Balancing datasets and optimizing hyperparameters
+## Project structure
 
-#### c. Clustering
-- **Models Used**: Custom K-Means Implementation
-- **Skills Demonstrated**:
-  - Grouping cars into clusters based on numerical features
-  - Visualizing clusters and centroids
-
-#### d. Anomaly Detection
-- **Models Used**: Isolation Forest, Local Outlier Factor (LOF)
-- **Skills Demonstrated**:
-  - Identifying outliers in the dataset
-  - Analyzing anomalies to uncover unusual patterns
-
-### 4. Visualization and Insights
-- **Tools Used**: Matplotlib, Seaborn
-- **Skills Demonstrated**:
-  - Creating professional visualizations to communicate findings
-  - Highlighting key insights, such as factors influencing car prices
-
-## Project Structure
 ```
-Car-Auction-Data-Analysis-Project/
+Car-Auction-Machine-Learning-Project/
+├── 01_data_cleaning.ipynb
+├── 02_eda.ipynb
+├── 03_baseline_models.ipynb
+├── 04_gradient_boosting.ipynb
+├── 05_anomaly_detection.ipynb
+├── 06_condition_classification.ipynb
 ├── data/
-│   ├── raw/                # Raw, unprocessed data files
-│   ├── cleaned/            # Cleaned and processed data files
-├── docs/                   # Documentation and assignments
-├── notebooks/              # Jupyter notebooks for analysis
-├── src/                    # Python scripts for data processing and modeling
-├── requirements.txt        # Python dependencies
-└── README.md               # Project overview and instructions
+│   ├── raw/           # car_prices.csv (and optional Google Trends CSVs)
+│   └── cleaned/       # car_prices_cleaned.csv, baseline_results.json
+├── src/               # cleaning_scripts.py, kmeans.py, anomaly_detection.py
+├── archive/           # Legacy notebooks and old report
+├── requirements.txt
+└── README.md
 ```
 
-## Skills Demonstrated
-- **Programming**: Python (Pandas, NumPy, Scikit-learn, Matplotlib, Seaborn)
-- **Data Analysis**: Data cleaning, EDA, feature engineering
-- **Machine Learning**: Regression, classification, clustering, anomaly detection
-- **Visualization**: Creating insightful plots and charts
-- **Problem-Solving**: Tackling real-world data challenges
+## How to run it
 
-## How to Run the Project
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/Car-Auction-Data-Analysis-Project.git
-   cd Car-Auction-Data-Analysis-Project
-   ```
-2. Install dependencies:
+1. Clone the repo and install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-3. Run the data cleaning script:
-   ```bash
-   python src/clean_data.py
-   ```
-4. Explore the notebooks:
-   ```bash
-   jupyter notebook notebooks/
-   ```
+2. Run the notebooks in order. Start with **01_data_cleaning.ipynb** (needs Kaggle access for the dataset). It writes `data/raw/car_prices.csv` and `data/cleaned/car_prices_cleaned.csv`. The rest of the notebooks read from those.
+3. Notebook 03 writes `data/baseline_results.json`; notebook 04 loads it so the baseline comparison table stays in sync without manual copy-paste.
 
-## Insights and Takeaways
-- **Factors Influencing Car Prices**: Mileage, condition, and region are key predictors.
-- **Anomalies**: Outliers often represent data entry errors or unique cases.
-- **Clustering**: Grouping cars by features reveals distinct market segments.
+If you already have the cleaned CSV from a previous run, you can start from 02 or 03.
 
-This project highlights a strong foundation in data science and machine learning, with a focus on practical applications and insights.
+## Takeaways
+
+Price is heavily driven by MMR (Manheim Market Report), odometer, year, and condition. The full one-hot encoded feature set (make, model, body type, state, etc.) adds enough signal that Gradient Boosting beats the linear and tree baselines on a held-out test set. The error analysis in notebook 04 shows where the model does well (mid-range prices) and where it struggles (high-end and very high mileage). Anomaly detection surfaces likely data errors and genuinely unusual listings, which is useful for cleaning or review.
