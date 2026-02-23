@@ -45,6 +45,26 @@ Car-Auction-Machine-Learning-Project/
 
 If you already have the cleaned CSV from a previous run, you can start from 02 or 03.
 
+## Results
+
+Numbers below are from a single full run (train/test 80/20, `random_state=42`).
+
+**Gradient Boosting (held-out test set):** MAE $898.34, R² 0.9731. Test MAE is about 6.5% of average selling price. RMSE is computed in notebook 04.
+
+**Model comparison (test set):**
+
+| Model              | Test MAE ($) | Test R²  |
+| ------------------ | ------------ | -------- |
+| Gradient Boosting  | 898.34       | 0.9731   |
+| Random Forest      | 954.36       | 0.9712   |
+| Lasso Regression   | 968.98       | 0.9704   |
+| Ridge Regression   | 969.70       | 0.9705   |
+| Linear Regression  | 969.87       | 0.9704   |
+
+**Top features:** The top 5 features account for 98.1% of total importance. Run the feature importance section in notebook 04 to see the exact list (mmr, odometer, year, and condition are the main drivers).
+
+**Where the model fails most:** Error is highest for high-end vehicles ($50k+), with test MAE about $3,808 on that segment (only 662 samples). By mileage, MAE is highest in the 0–25k mile segment (about $1,042) and lowest for 150k+ miles (about $662). The model does best in mid-range prices ($5k–$20k) and in high-mileage segments where there is more data.
+
 ## Takeaways
 
-Price is heavily driven by MMR (Manheim Market Report), odometer, year, and condition. The full one-hot encoded feature set (make, model, body type, state, etc.) adds enough signal that Gradient Boosting beats the linear and tree baselines on a held-out test set. The error analysis in notebook 04 shows where the model does well (mid-range prices) and where it struggles (high-end and very high mileage). Anomaly detection surfaces likely data errors and genuinely unusual listings, which is useful for cleaning or review.
+Price is driven mainly by MMR, odometer, year, and condition; the full encoded feature set lets Gradient Boosting beat the baselines. For more detail and numbers, see the Results section above. Anomaly detection (notebook 05) surfaces likely data errors and unusual listings.
